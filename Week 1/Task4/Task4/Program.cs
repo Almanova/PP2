@@ -5,25 +5,20 @@ namespace Task4
     class Program
     {
         static void Main(string[] args)
-        {   //reading an input number as a string, converting it into an integer
-            int n = int.Parse(Console.ReadLine());
-            //creating a 2d array of strings
-            string[,] a = new string[n,n];
-            //running through the array
-            for (int i = 0; i < n; i++)
+        {
+            int n = int.Parse(Console.ReadLine()); //reading an input number as a string, converting it into an integer
+            string[,] a = new string[n,n]; //creating a 2d array of strings
+            for (int i = 0; i < n; i++) //running through the array
                 for (int j = 0; j < n; j++)
-                    //condition when only elements under diagonal has to be filled filled with "[*]"
-                    if (j <= i) a[i, j] = "[*]";
+                    if (j <= i) a[i, j] = "[*]"; //condition when only elements under diagonal has to be filled filled with "[*]"
 
             for (int i = 0; i < n; i++)
             {
-                //printing the 2d array
-                for (int j = 0; j < n; j++)
+                for (int j = 0; j < n; j++) //printing the 2d array
                    Console.Write(a[i,j]);
                 Console.WriteLine();
             }
-            //quiting the program by pressing any key (otherwise it closes immediately) 
-            Console.ReadKey();
+            Console.ReadKey(); //quiting the program by pressing any key (otherwise it closes immediately)
         }
     }
 }
