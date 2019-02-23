@@ -14,6 +14,11 @@ namespace Task2
             this.id = id;
             }
 
+        public Student(int yearofstudy) 
+        {
+            this.yearofstudy = yearofstudy;
+        }
+
         public Student() { } //defining empty constructor
 
         public void Print() //creating function to access name and id
@@ -22,8 +27,8 @@ namespace Task2
             Console.WriteLine("Student's id: " + id);
             }
 
-        public void Increment() //creating function to increase a year of study 
-            { 
+        public void Increment(int yearofstudy) //creating function to increase a year of study 
+            {
             yearofstudy++; //increasing a year of study by one
             Console.WriteLine("Increased year of study: " + yearofstudy); //printing it out
             }
@@ -34,8 +39,10 @@ namespace Task2
         static void Main(string[] args)
         {
             Student st1 = new Student("aaa", "18BDxxxxxx"); //creating new Student within a class
+            string s = Console.ReadLine();
+            int n = int.Parse(s);
             st1.Print(); //accessing name and id
-            st1.Increment(); //accessing increased year of study
+            st1.Increment(n); //accessing increased year of study
             Console.ReadKey(); ////quiting the program by pressing any key (otherwise it closes immediately)
         }
     }
