@@ -6,37 +6,37 @@ using System.Threading.Tasks;
 
 namespace Task1
 {
-    public class Complex
+    public class Complex //creating new class
     {
-        public List<ComplexNumber> Numbers;
+        public List<ComplexNumber> Numbers; //one property - list of complex numbers
 
-        public Complex()
+        public Complex() //empty constructor
         {
             Numbers = new List<ComplexNumber>();
         }
 
-        public Complex(ComplexNumber complexNumber)
+        public Complex(ComplexNumber complexNumber) //constructor with one parameter
         {
             Numbers = new List<ComplexNumber>();
         }
     }
 
-    public class ComplexNumber
+    public class ComplexNumber //creating class ComplexNumber
     {
-        public double Re;
-        public double Im;
+        public double Re; //real part of a number
+        public double Im; //imaginary part of a number
 
-        public ComplexNumber(double Re, double Im)
+        public ComplexNumber(double Re, double Im) //consrtuctor with 2 parameters
         {
             this.Re = Re;
             this.Im = Im;
         }
 
-        public ComplexNumber() { }
+        public ComplexNumber() { } //empty constructor
 
-        public override string ToString()
+        public override string ToString() //providing ToString() method
         {
-            return Re + " + " + Im + "i";
+            return Re + " + " + Im + "i"; //returning whole number
         }
     }
 }
