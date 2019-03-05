@@ -12,11 +12,12 @@ namespace SnakeGame
     {
         public List<GameObject> GameObjects;
         public bool isAlive;
+        public string nickname;
         public Snake snake;
         public Food food;
         public Wall wall;
 
-        public Game()
+        public Game(string nickname)
         {
             GameObjects = new List<GameObject>();
             snake = new Snake(10, 5, 'o', ConsoleColor.Magenta, 0);
@@ -25,16 +26,23 @@ namespace SnakeGame
             GameObjects.Add(snake);
             GameObjects.Add(food);
             GameObjects.Add(wall);
+            this.nickname = nickname;
             isAlive = true;
         }
 
-        public Game(List<GameObject> GameObjects) 
+        public Game() 
+        {
+
+        }
+
+        public Game(List<GameObject> GameObjects, string nickname) 
         {
             this.GameObjects = GameObjects;
             isAlive = true;
             this.snake = (Snake)GameObjects[0];
             this.food = (Food)GameObjects[1];
             this.wall = (Wall)GameObjects[2];
+            this.nickname = nickname;
         }
 
         public void Start()
@@ -46,17 +54,31 @@ namespace SnakeGame
             while (isAlive && consoleKey.Key != ConsoleKey.Escape) 
             {
                 Draw();
-                Console.SetCursorPosition(38, 23);
+                string author = "SNAKE GAME > > > Author : Almanova Madina";
+                Console.SetCursorPosition((Console.WindowWidth - author.Length) / 2, 23);
                 Console.ForegroundColor = ConsoleColor.Cyan;
-                Console.WriteLine("SNAKE GAME > > > Author : Almanova Madina");
+                Console.WriteLine(author);
                 Console.SetCursorPosition(3, 25);
                 Console.ForegroundColor = ConsoleColor.DarkGray;
                 if (snake.body.Count == 1)
                     Console.WriteLine("YOUR SCORE: 0");
                 else Console.WriteLine("YOUR SCORE: " + ((snake.body.Count * 10) - 10));
-                Console.SetCursorPosition(44, 27);
+                Console.SetCursorPosition(108, 25);
                 Console.ForegroundColor = ConsoleColor.DarkGray;
-                Console.WriteLine("Press ESC to go back to Menu");
+                if (wall.gameLevel == Wall.GameLevel.First)
+                    Console.WriteLine("LEVEL: 1");
+                else if (wall.gameLevel == Wall.GameLevel.Second)
+                    Console.WriteLine("LEVEL: 2");
+                else if (wall.gameLevel == Wall.GameLevel.Third)
+                    Console.WriteLine("LEVEL: 3");
+                string name = "| " + nickname + " |";
+                Console.SetCursorPosition((Console.WindowWidth - name.Length) / 2, 25);
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine(name);
+                string press = "Press ESC to go back to Menu";
+                Console.SetCursorPosition((Console.WindowWidth - press.Length) / 2, 27);
+                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.WriteLine(press);
                 consoleKey = Console.ReadKey();
                 if (snake.CollisionWithObject(food))
                 {
@@ -80,9 +102,10 @@ namespace SnakeGame
                     isAlive = false;
                 if (consoleKey.Key == ConsoleKey.Escape) 
                 {
-                    if (File.Exists("savethegame.xml"))
-                        File.Delete("savethegame.xml");
-                    FileStream fs = new FileStream("savethegame.xml", FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                    string fileName = nickname + ".xml";
+                    if (File.Exists(fileName))
+                        File.Delete(fileName);
+                    FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
                     XmlSerializer xs = new XmlSerializer(typeof(List<GameObject>));
                     xs.Serialize(fs, GameObjects);
                     fs.Close();
@@ -94,6 +117,8 @@ namespace SnakeGame
                 if (snake.SnakeDirection(consoleKey))
                     snake.Move(consoleKey);
             }
+            if (File.Exists(nickname + ".xml"))
+                File.Delete(nickname + ".xml");
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.SetCursorPosition(55, 7);

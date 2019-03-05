@@ -79,19 +79,63 @@ namespace SnakeGame
                 {
                     if (cursor == 0)
                     {
-                        Game game = new Game();
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.SetCursorPosition(55, 7);
+                        Console.WriteLine("SNAKE GAME");
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        Console.SetCursorPosition(50, 11);
+                        Console.WriteLine("Enter your Nickname:");
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.SetCursorPosition(45, 20);
+                        Console.WriteLine("Press ENTER to start a new game");
+                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        Console.SetCursorPosition(55, 12);
+                        string nickname = Console.ReadLine();
+                        Game game = new Game(nickname);
                         game.Draw();
                         game.Start();
                     }
 
                     if (cursor == 1)
                     {
-                        FileStream fs = new FileStream("savethegame.xml", FileMode.OpenOrCreate, FileAccess.ReadWrite);
-                        XmlSerializer xs = new XmlSerializer(typeof(List<GameObject>));
-                        List<GameObject> GameObjects2 = xs.Deserialize(fs) as List<GameObject>;
-                        fs.Close();
-                        Game game2 = new Game(GameObjects2);
-                        game2.Start();
+                        Console.Clear();
+                        Console.ForegroundColor = ConsoleColor.Cyan;
+                        Console.SetCursorPosition(55, 7);
+                        Console.WriteLine("SNAKE GAME");
+                        Console.ForegroundColor = ConsoleColor.Magenta;
+                        Console.SetCursorPosition(50, 11);
+                        Console.WriteLine("Enter your Nickname:");
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.SetCursorPosition(44, 20);
+                        Console.WriteLine("Press ENTER to continue the game");
+                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        Console.SetCursorPosition(55, 12);
+                        string nickname = Console.ReadLine();
+                        string fileName = nickname + ".xml";
+                        if (File.Exists(fileName)) 
+                        {
+                            FileStream fs = new FileStream(fileName, FileMode.OpenOrCreate, FileAccess.ReadWrite);
+                            XmlSerializer xs = new XmlSerializer(typeof(List<GameObject>));
+                            List<GameObject> GameObjects2 = xs.Deserialize(fs) as List<GameObject>;
+                            fs.Close();
+                            Game game2 = new Game(GameObjects2, nickname);
+                            game2.Start();
+                        }
+                        else 
+                        {
+                            Console.Clear();
+                            Console.ForegroundColor = ConsoleColor.Cyan;
+                            Console.SetCursorPosition(55, 7);
+                            Console.WriteLine("SNAKE GAME");
+                            Console.ForegroundColor = ConsoleColor.Magenta;
+                            Console.SetCursorPosition(53, 11);
+                            Console.WriteLine("NO SAVED GAMES");
+                            Console.ForegroundColor = ConsoleColor.DarkGray;
+                            Console.SetCursorPosition(44, 20);
+                            Console.WriteLine("Press any key to go back to Menu");
+                            Console.ReadKey();
+                        }
                     }
 
                     if (cursor == 2)
