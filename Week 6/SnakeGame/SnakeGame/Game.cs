@@ -17,10 +17,12 @@ namespace SnakeGame
         public Food food;
         public Wall wall;
 
+        public Game() { }
+
         public Game(string nickname)
         {
             GameObjects = new List<GameObject>();
-            snake = new Snake(10, 5, 'o', ConsoleColor.Magenta, 0);
+            snake = new Snake(3, 2, 'o', ConsoleColor.Magenta, 0);
             food = new Food(0, 0, '*', ConsoleColor.Cyan);
             wall = new Wall('#', ConsoleColor.DarkYellow);
             GameObjects.Add(snake);
@@ -28,11 +30,6 @@ namespace SnakeGame
             GameObjects.Add(wall);
             this.nickname = nickname;
             isAlive = true;
-        }
-
-        public Game() 
-        {
-
         }
 
         public Game(List<GameObject> GameObjects, string nickname) 
@@ -47,7 +44,7 @@ namespace SnakeGame
 
         public void Start()
         {
-            food.GenerateByCoordinates(60, 1);
+            food.GenerateByCoordinates(60, 6);
             wall.LoadLevel();
             Draw();
             ConsoleKeyInfo consoleKey = Console.ReadKey();
@@ -73,7 +70,7 @@ namespace SnakeGame
                     Console.WriteLine("LEVEL: 3");
                 string name = "| " + nickname + " |";
                 Console.SetCursorPosition((Console.WindowWidth - name.Length) / 2, 25);
-                Console.ForegroundColor = ConsoleColor.DarkGray;
+                Console.ForegroundColor = ConsoleColor.Magenta;
                 Console.WriteLine(name);
                 string press = "Press ESC to go back to Menu";
                 Console.SetCursorPosition((Console.WindowWidth - press.Length) / 2, 27);
@@ -84,7 +81,7 @@ namespace SnakeGame
                 {
                     snake.body.Add(new Point(0, 0));
 
-                    if (snake.body.Count < 16 && snake.body.Count % 5 == 0)
+                    if (snake.body.Count < 11 && snake.body.Count % 5 == 0)
                     {
                         snake.ToTheCorner();
                         wall.NextLevel();
@@ -96,7 +93,7 @@ namespace SnakeGame
                 }
                 if (snake.CollisionWithObject(wall))
                     isAlive = false;
-                if (snake.OutOfConsole > 2)
+                if (snake.OutOfConsole > 3)
                     isAlive = false;
                 if (snake.CollisionWithSnake(snake))
                     isAlive = false;

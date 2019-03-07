@@ -101,7 +101,7 @@ namespace SnakeGame
             {
                 direction = Direction.Right;
                 body[i].x = body.Count - i;
-                body[i].y = 1;
+                body[i].y = 2;
             }
         }
     }
