@@ -25,11 +25,9 @@ namespace SnakeGame
             snake = new Snake(3, 2, 'o', ConsoleColor.Magenta, 0);
             food = new Food(0, 0, '*', ConsoleColor.Cyan);
             wall = new Wall('#', ConsoleColor.DarkYellow);
-            snake2 = new Snake(117, 2, 'o', ConsoleColor.Blue, 0);
             GameObjects.Add(snake);
             GameObjects.Add(food);
             GameObjects.Add(wall);
-            GameObjects.Add(snake2);
             this.nickname = nickname;
             isAlive = true;
         }
