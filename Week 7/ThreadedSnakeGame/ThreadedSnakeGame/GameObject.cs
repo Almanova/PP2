@@ -3,9 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 namespace ThreadedSnakeGame
 {
+    [XmlInclude(typeof(Snake))]
+    [XmlInclude(typeof(Food))]
+    [XmlInclude(typeof(Wall))]
+
     public class GameObject
     {
         public List<Point> body;
