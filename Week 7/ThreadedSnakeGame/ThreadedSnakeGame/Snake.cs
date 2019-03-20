@@ -44,22 +44,22 @@ namespace ThreadedSnakeGame
 
         public void ClearSnake()
         {
-            foreach (Point p in body)
+            for (int i = 0; i < body.Count; i++)
             {
-                Console.SetCursorPosition(p.x, p.y);
+                Console.SetCursorPosition(body[i].x, body[i].y);
                 Console.Write(' ');
             }
         }
 
         public bool CheckDirection(ConsoleKeyInfo consoleKey)
         {
-            if (body.Count > 1 && direction == Direction.Down && consoleKey.Key == ConsoleKey.UpArrow)
+            if (body.Count > 1 && direction == Direction.Down && (consoleKey.Key == ConsoleKey.UpArrow || consoleKey.Key == ConsoleKey.W))
                 return false;
-            if (body.Count > 1 && direction == Direction.Up && consoleKey.Key == ConsoleKey.DownArrow)
+            if (body.Count > 1 && direction == Direction.Up && (consoleKey.Key == ConsoleKey.DownArrow || consoleKey.Key == ConsoleKey.S))
                 return false;
-            if (body.Count > 1 && direction == Direction.Left && consoleKey.Key == ConsoleKey.RightArrow)
+            if (body.Count > 1 && direction == Direction.Left && (consoleKey.Key == ConsoleKey.RightArrow || consoleKey.Key == ConsoleKey.D))
                 return false;
-            if (body.Count > 1 && direction == Direction.Right && consoleKey.Key == ConsoleKey.LeftArrow)
+            if (body.Count > 1 && direction == Direction.Right && (consoleKey.Key == ConsoleKey.LeftArrow || consoleKey.Key == ConsoleKey.A))
                 return false;
             return true;
         }
@@ -115,24 +115,35 @@ namespace ThreadedSnakeGame
             }
         }
 
-        public void ChangeDirection(ConsoleKeyInfo keyInfo)
+        public void ChangeDirection(ConsoleKeyInfo consoleKey)
         {
-            if (keyInfo.Key == ConsoleKey.UpArrow)
+
+            if (consoleKey.Key == ConsoleKey.UpArrow || consoleKey.Key == ConsoleKey.W)
                 direction = Direction.Up;
-            if (keyInfo.Key == ConsoleKey.DownArrow)
+            if (consoleKey.Key == ConsoleKey.DownArrow || consoleKey.Key == ConsoleKey.S)
                 direction = Direction.Down;
-            if (keyInfo.Key == ConsoleKey.LeftArrow)
+            if (consoleKey.Key == ConsoleKey.LeftArrow || consoleKey.Key == ConsoleKey.A)
                 direction = Direction.Left;
-            if (keyInfo.Key == ConsoleKey.RightArrow)
+            if (consoleKey.Key == ConsoleKey.RightArrow || consoleKey.Key == ConsoleKey.D)
                 direction = Direction.Right;
         }
 
-        public void ToTheCorner()
+        public void ToTheLeftCorner()
         {
             for (int i = 0; i < body.Count(); i++)
             {
                 direction = Direction.Right;
                 body[i].x = body.Count - i;
+                body[i].y = 2;
+            }
+        }
+
+        public void ToTheRightCorner()
+        {
+            for (int i = 0; i < body.Count(); i++)
+            {
+                direction = Direction.Left;
+                body[i].x = 118 - body.Count + i;
                 body[i].y = 2;
             }
         }

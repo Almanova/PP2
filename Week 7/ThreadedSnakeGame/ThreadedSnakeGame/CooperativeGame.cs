@@ -4,45 +4,57 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-using System.IO;
 using System.Xml.Serialization;
+using System.IO;
 
 namespace ThreadedSnakeGame
 {
-    public class Game
+    public class CooperativeGame
     {
         public List<GameObject> GameObjects;
         public bool isAlive;
-        public string nickname;
-        public Snake snake;
+        public string FirstPlayer;
+        public string SecondPlayer;
+        public Snake FirstSnake;
+        public Snake SecondSnake;
         public Food food;
         public Wall wall;
         public int SleepingTime;
 
-        public Game() { }
+        public CooperativeGame() { }
 
-        public Game(string nickname, Snake snake, Food food, Wall wall)
+        public CooperativeGame(string FirstPlayer, 
+            string SecondPlayer, 
+            Snake FirstSnake, 
+            Snake SecondSnake, 
+            Food food,
+            Wall wall)
         {
             GameObjects = new List<GameObject>();
             isAlive = true;
-            this.nickname = nickname;
-            this.snake = snake;
+            this.FirstPlayer = FirstPlayer;
+            this.SecondPlayer = SecondPlayer;
+            this.FirstSnake = FirstSnake;
+            this.SecondSnake = SecondSnake;
             this.food = food;
             this.wall = wall;
             SleepingTime = 150;
-            GameObjects.Add(snake);
+            GameObjects.Add(FirstSnake);
+            GameObjects.Add(SecondSnake);
             GameObjects.Add(food);
             GameObjects.Add(wall);
         }
 
-        public Game(List<GameObject> GameObjects, string nickname)
+        public CooperativeGame(List<GameObject> GameObjects, string FirstPlayer, string SecondPlayer)
         {
             this.GameObjects = GameObjects;
             isAlive = true;
-            snake = (Snake)GameObjects[0];
-            food = (Food)GameObjects[1];
-            wall = (Wall)GameObjects[2];
-            this.nickname = nickname;
+            FirstSnake = (Snake)GameObjects[0];
+            SecondSnake = (Snake)GameObjects[1];
+            food = (Food)GameObjects[2];
+            wall = (Wall)GameObjects[3];
+            this.FirstPlayer = FirstPlayer;
+            this.SecondPlayer = SecondPlayer;
             SleepingTime = 150;
         }
 
@@ -51,20 +63,30 @@ namespace ThreadedSnakeGame
             wall.DrawWall();
             food.GenerateByCoordinates(60, 6);
             food.DrawFood();
-            snake.DrawSnake();
+            FirstSnake.DrawSnake();
+            SecondSnake.DrawSnake();
             Labels();
             PrintScore();
             PrintLevel();
 
-            Thread thread = new Thread(MoveSnake);
+            Thread thread = new Thread(MoveSnakes);
             thread.Start();
 
             while (isAlive)
             {
                 ConsoleKeyInfo consoleKey = Console.ReadKey(true);
 
-                if (snake.CheckDirection(consoleKey))
-                    snake.ChangeDirection(consoleKey);
+                if (consoleKey.Key == ConsoleKey.W || consoleKey.Key == ConsoleKey.S || consoleKey.Key == ConsoleKey.A || consoleKey.Key == ConsoleKey.D)
+                {
+                    if (FirstSnake.CheckDirection(consoleKey))
+                        FirstSnake.ChangeDirection(consoleKey);
+                }
+
+                else
+                {
+                    if (SecondSnake.CheckDirection(consoleKey))
+                        SecondSnake.ChangeDirection(consoleKey);
+                }
 
                 if (consoleKey.Key == ConsoleKey.Escape)
                 {
@@ -76,20 +98,22 @@ namespace ThreadedSnakeGame
             }
         }
 
-        public void MoveSnake()
+        public void MoveSnakes()
         {
             while (isAlive)
             {
-                snake.Move();
+                FirstSnake.Move();
+                SecondSnake.Move();
 
-                if (snake.CollisionWithObject(food))
+                if (FirstSnake.CollisionWithObject(food))
                 {
-                    snake.body.Add(new Point(1, 29));
+                    FirstSnake.body.Add(new Point(1, 29));
                     PrintScore();
 
-                    if (snake.body.Count < 11 && snake.body.Count % 5 == 0)
+                    if ((FirstSnake.body.Count + SecondSnake.body.Count) < 21 && (FirstSnake.body.Count + SecondSnake.body.Count % 10) == 0)
                     {
-                        snake.ToTheRightCorner();
+                        FirstSnake.ToTheLeftCorner();
+                        SecondSnake.ToTheRightCorner();
                         wall.NextLevel();
                         wall.DrawWall();
                         PrintLevel();
@@ -100,18 +124,46 @@ namespace ThreadedSnakeGame
 
                     else
                     {
-                        while (food.CollisionWithObject(snake) || food.CollisionWithObject(wall))
+                        while (food.CollisionWithObject(FirstSnake) || food.CollisionWithObject(SecondSnake) || food.CollisionWithObject(wall))
                             food.Generate();
                     }
 
                     food.DrawFood();
                 }
 
-                if (snake.CollisionWithObject(wall))
+                if (SecondSnake.CollisionWithObject(food))
+                {
+                    SecondSnake.body.Add(new Point(1, 29));
+                    PrintScore();
+
+                    if ((FirstSnake.body.Count + SecondSnake.body.Count) < 21 && (FirstSnake.body.Count + SecondSnake.body.Count) % 10 == 0)
+                    {
+                        FirstSnake.ToTheLeftCorner();
+                        SecondSnake.ToTheRightCorner();
+                        wall.NextLevel();
+                        wall.DrawWall();
+                        PrintLevel();
+                        food.Clear();
+                        food.GenerateByCoordinates(60, 2);
+                        SleepingTime -= 50;
+                    }
+
+                    else
+                    {
+                        while (food.CollisionWithObject(FirstSnake) || food.CollisionWithObject(SecondSnake) || food.CollisionWithObject(wall))
+                            food.Generate();
+                    }
+
+                    food.DrawFood();
+                }
+
+                if (FirstSnake.CollisionWithObject(wall) || SecondSnake.CollisionWithObject(wall))
                     isAlive = false;
-                if (snake.OutOfConsole > 3)
+                if (FirstSnake.OutOfConsole > 3 || SecondSnake.OutOfConsole > 3)
                     isAlive = false;
-                if (snake.CollisionWithSnake(snake))
+                if (FirstSnake.CollisionWithSnake(FirstSnake) || SecondSnake.CollisionWithSnake(SecondSnake))
+                    isAlive = false;
+                if (FirstSnake.CollisionWithObject(SecondSnake) || SecondSnake.CollisionWithObject(FirstSnake))
                     isAlive = false;
 
                 if (isAlive == false)
@@ -121,8 +173,10 @@ namespace ThreadedSnakeGame
                     break;
                 }
 
-                snake.ClearSnake();
-                snake.DrawSnake();
+                FirstSnake.ClearSnake();
+                FirstSnake.DrawSnake();
+                SecondSnake.ClearSnake();
+                SecondSnake.DrawSnake();
 
                 Thread.Sleep(SleepingTime);
             }
@@ -133,7 +187,7 @@ namespace ThreadedSnakeGame
             string[] labels = new string[]
             {
                 "SNAKE GAME > > > Author : Almanova Madina",
-                "| " + nickname + " |",
+                "| " + FirstPlayer + " & " + SecondPlayer + " |",
                 "Press ESC to go back to Menu"
             };
 
@@ -166,7 +220,7 @@ namespace ThreadedSnakeGame
             Console.Write("     ");
             Console.SetCursorPosition(15, 25);
             Console.ForegroundColor = ConsoleColor.DarkGray;
-            Console.Write((snake.body.Count * 10) - 10);
+            Console.Write((FirstSnake.body.Count * 10) + (SecondSnake.body.Count * 10) - 20);
         }
 
         public void PrintLevel()
@@ -185,8 +239,8 @@ namespace ThreadedSnakeGame
 
         public void GameOver()
         {
-            if (File.Exists(nickname + ".xml"))
-                File.Delete(nickname + ".xml");
+            if (File.Exists(FirstPlayer + SecondPlayer + ".xml"))
+                File.Delete(FirstPlayer + SecondPlayer + ".xml");
 
             Console.Clear();
             Console.ForegroundColor = ConsoleColor.Cyan;
@@ -197,7 +251,7 @@ namespace ThreadedSnakeGame
             Console.WriteLine("GAME OVER");
             Console.ForegroundColor = ConsoleColor.DarkYellow;
             Console.SetCursorPosition(53, 12);
-            Console.WriteLine("YOUR SCORE: " + ((snake.body.Count * 10) - 10));
+            Console.WriteLine("YOUR SCORE: " + ((FirstSnake.body.Count * 10) + (SecondSnake.body.Count * 10) - 20));
             Console.ForegroundColor = ConsoleColor.DarkGray;
             Console.SetCursorPosition(44, 20);
             Console.WriteLine("Press any key to go back to Menu");
@@ -205,7 +259,7 @@ namespace ThreadedSnakeGame
 
         public void Serialize()
         {
-            string fileName = nickname + ".xml";
+            string fileName = FirstPlayer + SecondPlayer + ".xml";
             if (File.Exists(fileName))
                 File.Delete(fileName);
 
@@ -219,10 +273,10 @@ namespace ThreadedSnakeGame
             mainMenu.Show();
             mainMenu.StartMenu();
         }
-        
+
         public void SaveScore()
         {
-            Player player = new Player(nickname, (snake.body.Count * 10) - 10);
+            Player player = new Player(FirstPlayer +  " & " + SecondPlayer, (FirstSnake.body.Count * 10) + (SecondSnake.body.Count * 10) - 20);
 
             if (File.Exists("Scores.xml"))
             {
@@ -233,7 +287,7 @@ namespace ThreadedSnakeGame
 
                 for (int i = 0; i < players.Count; i++)
                 {
-                    if (players[i].nickname == nickname)
+                    if (players[i].nickname == FirstPlayer + " & " + SecondPlayer)
                         players.Remove(players[i]);
                 }
 

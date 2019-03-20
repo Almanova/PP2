@@ -10,6 +10,7 @@ namespace ThreadedSnakeGame
     public class Wall : GameObject
     {
         public Wall() { }
+
         public Wall(char sign, ConsoleColor color) : base(0, 0, sign, color)
         {
             body = new List<Point>();
