@@ -36,7 +36,7 @@ namespace Calculator
             RecurringTextBox.BackColor = SystemColors.ActiveBorder;
             RecurringTextBox.BorderStyle = BorderStyle.None;
             RecurringTextBox.Location = new Point(12, 40);
-            RecurringTextBox.Size = new Size(296, 26);
+            RecurringTextBox.Size = new Size(380, 26);
             RecurringTextBox.TextAlign = HorizontalAlignment.Right;
             RecurringTextBox.Enabled = false;
             Controls.Add(RecurringTextBox);
@@ -45,7 +45,7 @@ namespace Calculator
             MainTextBox.BackColor = SystemColors.ActiveBorder;
             MainTextBox.BorderStyle = BorderStyle.None;
             MainTextBox.Location = new Point(12, 72);
-            MainTextBox.Size = new Size(296, 55);
+            MainTextBox.Size = new Size(380, 55);
             MainTextBox.TextAlign = HorizontalAlignment.Right;
             MainTextBox.ForeColor = Color.FromArgb(0, 0, 0);
             MainTextBox.Text = "0";
@@ -188,6 +188,136 @@ namespace Calculator
                 btn.Click += new EventHandler(BtnClick);
                 Controls.Add(btn);
             }
+
+            y = MainTextBox.Location.Y + MainTextBox.Height + 382;
+
+            Button bttn = new Button();
+            bttn.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            bttn.Text = "sin";
+            bttn.Size = new Size(79, 55);
+            bttn.BackColor = Color.FromArgb(219, 219, 219);
+            bttn.FlatStyle = FlatStyle.Flat;
+            bttn.FlatAppearance.BorderSize = 1;
+            bttn.FlatAppearance.BorderColor = SystemColors.ActiveBorder;
+            bttn.FlatAppearance.MouseOverBackColor = Color.FromArgb(91, 91, 91);
+            bttn.FlatAppearance.MouseDownBackColor = Color.FromArgb(137, 88, 142);
+            bttn.Location = new Point(x, y);
+            bttn.Click += new EventHandler(BtnClick);
+            Controls.Add(bttn);
+
+            Button button = new Button();
+            button.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            button.Text = "cos";
+            button.Size = new Size(79, 55);
+            button.BackColor = Color.FromArgb(219, 219, 219);
+            button.FlatStyle = FlatStyle.Flat;
+            button.FlatAppearance.BorderSize = 1;
+            button.FlatAppearance.BorderColor = SystemColors.ActiveBorder;
+            button.FlatAppearance.MouseOverBackColor = Color.FromArgb(91, 91, 91);
+            button.FlatAppearance.MouseDownBackColor = Color.FromArgb(137, 88, 142);
+            button.Location = new Point(x + 79, y);
+            button.Click += new EventHandler(BtnClick);
+            Controls.Add(button);
+
+            Button button2 = new Button();
+            button2.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            button2.Text = "Mod";
+            button2.Size = new Size(79, 55);
+            button2.BackColor = Color.FromArgb(219, 219, 219);
+            button2.FlatStyle = FlatStyle.Flat;
+            button2.FlatAppearance.BorderSize = 1;
+            button2.FlatAppearance.BorderColor = SystemColors.ActiveBorder;
+            button2.FlatAppearance.MouseOverBackColor = Color.FromArgb(91, 91, 91);
+            button2.FlatAppearance.MouseDownBackColor = Color.FromArgb(137, 88, 142);
+            button2.Location = new Point(x + 79 * 2, y);
+            button2.Click += new EventHandler(BtnClick);
+            Controls.Add(button2);
+
+            Button button3 = new Button();
+            button3.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            button3.Text = "log";
+            button3.Size = new Size(79, 55);
+            button3.BackColor = Color.FromArgb(219, 219, 219);
+            button3.FlatStyle = FlatStyle.Flat;
+            button3.FlatAppearance.BorderSize = 1;
+            button3.FlatAppearance.BorderColor = SystemColors.ActiveBorder;
+            button3.FlatAppearance.MouseOverBackColor = Color.FromArgb(91, 91, 91);
+            button3.FlatAppearance.MouseDownBackColor = Color.FromArgb(137, 88, 142);
+            button3.Location = new Point(x + 79 * 3, y);
+            button3.Click += new EventHandler(BtnClick);
+            Controls.Add(button3);
+
+            y = MainTextBox.Location.Y + MainTextBox.Height + 52;
+
+            Button button4 = new Button();
+            button4.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            button4.Text = "x^y";
+            button4.Size = new Size(79, 55);
+            button4.BackColor = Color.FromArgb(219, 219, 219);
+            button4.FlatStyle = FlatStyle.Flat;
+            button4.FlatAppearance.BorderSize = 1;
+            button4.FlatAppearance.BorderColor = SystemColors.ActiveBorder;
+            button4.FlatAppearance.MouseOverBackColor = Color.FromArgb(91, 91, 91);
+            button4.FlatAppearance.MouseDownBackColor = Color.FromArgb(137, 88, 142);
+            button4.Location = new Point(x + 79 * 4, y);
+            button4.Click += new EventHandler(BtnClick);
+            Controls.Add(button4);
+
+            Button button5 = new Button();
+            button5.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            button5.Text = "10^x";
+            button5.Size = new Size(79, 55);
+            button5.BackColor = Color.FromArgb(219, 219, 219);
+            button5.FlatStyle = FlatStyle.Flat;
+            button5.FlatAppearance.BorderSize = 1;
+            button5.FlatAppearance.BorderColor = SystemColors.ActiveBorder;
+            button5.FlatAppearance.MouseOverBackColor = Color.FromArgb(91, 91, 91);
+            button5.FlatAppearance.MouseDownBackColor = Color.FromArgb(137, 88, 142);
+            button5.Location = new Point(x + 79 * 4, y + 55);
+            button5.Click += new EventHandler(BtnClick);
+            Controls.Add(button5);
+
+            Button button6 = new Button();
+            button6.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            button6.Text = "n!";
+            button6.Size = new Size(79, 55);
+            button6.BackColor = Color.FromArgb(219, 219, 219);
+            button6.FlatStyle = FlatStyle.Flat;
+            button6.FlatAppearance.BorderSize = 1;
+            button6.FlatAppearance.BorderColor = SystemColors.ActiveBorder;
+            button6.FlatAppearance.MouseOverBackColor = Color.FromArgb(91, 91, 91);
+            button6.FlatAppearance.MouseDownBackColor = Color.FromArgb(137, 88, 142);
+            button6.Location = new Point(x + 79 * 4, y + 55 * 2);
+            button6.Click += new EventHandler(BtnClick);
+            Controls.Add(button6);
+
+            Button button7 = new Button();
+            button7.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            button7.Text = "yrootx";
+            button7.Size = new Size(79, 55);
+            button7.BackColor = Color.FromArgb(219, 219, 219);
+            button7.FlatStyle = FlatStyle.Flat;
+            button7.FlatAppearance.BorderSize = 1;
+            button7.FlatAppearance.BorderColor = SystemColors.ActiveBorder;
+            button7.FlatAppearance.MouseOverBackColor = Color.FromArgb(91, 91, 91);
+            button7.FlatAppearance.MouseDownBackColor = Color.FromArgb(137, 88, 142);
+            button7.Location = new Point(x + 79 * 4, y + 55 * 3);
+            button7.Click += new EventHandler(BtnClick);
+            Controls.Add(button7);
+
+            Button button8 = new Button();
+            button8.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            button8.Text = " ";
+            button8.Size = new Size(79, 55);
+            button8.BackColor = Color.FromArgb(219, 219, 219);
+            button8.FlatStyle = FlatStyle.Flat;
+            button8.FlatAppearance.BorderSize = 1;
+            button8.FlatAppearance.BorderColor = SystemColors.ActiveBorder;
+            button8.FlatAppearance.MouseOverBackColor = Color.FromArgb(91, 91, 91);
+            button8.FlatAppearance.MouseDownBackColor = Color.FromArgb(137, 88, 142);
+            button8.Location = new Point(x + 79 * 4, y + 55 * 4);
+            button8.Click += new EventHandler(BtnClick);
+            Controls.Add(button8);
         }
 
         private void ChangeText(string text)

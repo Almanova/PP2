@@ -85,5 +85,11 @@ namespace Calculator
             string[] arr = new string[] { "MC", "MR", "M+", "M-", "MS" };
             return arr.Contains(c);
         }
+
+        public static bool IsSinCos(string c)
+        {
+            string[] arr = new string[] { "sin", "cos" };
+            return arr.Contains(c);
+        }
     }
 }

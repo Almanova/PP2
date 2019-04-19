@@ -12,7 +12,14 @@ namespace Calculator
         AccumulateDigits,
         Operation,
         Result,
-        MemorySave
+        MemorySave,
+        SinCos,
+        Modulo,
+        Logarithm,
+        ParticularPower,
+        PowerOfTen,
+        Factorial,
+        AnyRoot
     }
 
     public delegate void ChangeTextDelegate(string text);
@@ -28,6 +35,7 @@ namespace Calculator
         string operation = "";
         bool afterResult = false;
         bool resultToMemory = false;
+        bool memoryNumberToFirst = false;
         List<string> reccuring = new List<string>();
         List<string> memoryBox = new List<string>();
         string memoryNumber = "0";
@@ -57,6 +65,27 @@ namespace Calculator
                 case CalcState.MemorySave:
                     MemorySave(msg, false);
                     break;
+                case CalcState.SinCos:
+                    SinCos(msg, false);
+                    break;
+                case CalcState.Modulo:
+                    Modulo(msg, false);
+                    break;
+                case CalcState.Logarithm:
+                    Logarithm(msg, false);
+                    break;
+                case CalcState.ParticularPower:
+                    ParticularPower(msg, false);
+                    break;
+                case CalcState.PowerOfTen:
+                    PowerOfTen(msg, false);
+                    break;
+                case CalcState.Factorial:
+                    Factorial(msg, false);
+                    break;
+                case CalcState.AnyRoot:
+                    AnyRoot(msg, false);
+                    break;
                 default:
                     break;
             }
@@ -76,7 +105,10 @@ namespace Calculator
                 if (Rules.IsSeparator(msg))
                     AccumulateDigits(msg, true);
                 if (Rules.IsMemoryOperation(msg))
+                {
+                    memoryNumberToFirst = true;
                     MemorySave(msg, true);
+                }
             }
         }
 
@@ -163,6 +195,29 @@ namespace Calculator
 
                 else if (Rules.IsMemoryOperation(msg))
                     MemorySave(msg, true);
+
+                else if (Rules.IsSinCos(msg))
+                {
+                    SinCos(msg, true);
+                }
+
+                else if (msg == "Mod")
+                    Modulo(msg, true);
+
+                else if (msg == "log")
+                    Logarithm(msg, true);
+
+                else if (msg == "x^y")
+                    ParticularPower(msg, true);
+
+                else if (msg == "10^x")
+                    PowerOfTen(msg, true);
+
+                else if (msg == "n!")
+                    Factorial(msg, true);
+
+                else if (msg == "yrootx")
+                    AnyRoot(msg, true);
             }
         }
 
@@ -220,6 +275,9 @@ namespace Calculator
 
                 else if (Rules.IsReset(msg))
                     Reset();
+
+                else if (Rules.IsMemoryOperation(msg))
+                    MemorySave(msg, true);
             }
         }
 
@@ -229,7 +287,24 @@ namespace Calculator
             {
                 calcState = CalcState.Result;
 
-                resultNumber = PerformCalculation();
+                if (operation == "Mod")
+                {
+                    resultNumber = (int.Parse(firstNumber) % int.Parse(secondNumber)).ToString();
+                }
+
+                else if (operation == "pow")
+                {
+                    resultNumber = Math.Pow(double.Parse(firstNumber), double.Parse(secondNumber)).ToString();
+                }
+
+                else if (operation == "root")
+                {
+                    resultNumber = Math.Pow(double.Parse(firstNumber), 1.0 / double.Parse(secondNumber)).ToString();
+                }
+
+                else
+                    resultNumber = PerformCalculation();
+
                 changeTextDelegate.Invoke(resultNumber);
                 firstNumber = resultNumber;
 
@@ -253,6 +328,7 @@ namespace Calculator
 
                 else if (Rules.IsMemoryOperation(msg))
                 {
+                    memoryNumberToFirst = true;
                     resultToMemory = true;
                     MemorySave(msg, true);
                 }
@@ -267,12 +343,15 @@ namespace Calculator
 
         void MemorySave(string msg, bool isInput)
         {
-            calcState = CalcState.MemorySave;
-
             if (isInput)
             {
+                calcState = CalcState.MemorySave;
+
                 double result = double.Parse(memoryNumber.Replace(",", "."), System.Globalization.CultureInfo.InvariantCulture); ;
                 double num;
+
+                if (secondNumber == "")
+                    secondNumber = "0";
 
                 if (resultToMemory)
                     num = double.Parse(resultNumber.Replace(",", "."), System.Globalization.CultureInfo.InvariantCulture);
@@ -294,12 +373,21 @@ namespace Calculator
                 }
 
                 else if (msg == "MS")
-                    memoryBox.Add(num.ToString());
+                    memoryNumber = num.ToString();
 
                 else if (msg == "MR")
                 {
-                    secondNumber = memoryBox[memoryBox.Count - 1];
-                    changeTextDelegate.Invoke(secondNumber);
+                    if (memoryNumberToFirst)
+                    {
+                        operation = "";
+                        firstNumber = memoryNumber;
+                        changeTextDelegate.Invoke(firstNumber);
+                    }
+                    else
+                    {
+                        secondNumber = memoryNumber;
+                        changeTextDelegate.Invoke(secondNumber);
+                    }
                 }
 
                 else if (msg == "MC")
@@ -307,6 +395,8 @@ namespace Calculator
                     memoryNumber = "0";
                     memoryBox = new List<string>();
                 }
+
+                memoryNumberToFirst = false;
             }
 
             else
@@ -318,27 +408,142 @@ namespace Calculator
                 }
 
                 else if (Rules.IsMemoryOperation(msg))
-                {
-                    if (msg == "MR")
-                    {
-                        if (memoryBox.Count == 0)
-                            changeTextDelegate.Invoke("0");
-                        else
-                        {
-                            secondNumber = memoryBox[memoryBox.Count - 1];
-                            changeTextDelegate.Invoke(secondNumber);
-                        }
-                    }
+                    MemorySave(msg, true);
 
-                    else
-                        MemorySave(msg, true);
-                }
+                else if (Rules.IsOperation(msg))
+                    Operation(msg, true);
+
+                else if (Rules.IsResult(msg))
+                    Result(msg, true);
 
                 else if (Rules.IsFullReset(msg))
                     FullReset();
             }
 
             resultToMemory = false;
+        }
+
+        void SinCos(string msg, bool isInput)
+        {
+            if (isInput)
+            {
+                calcState = CalcState.SinCos;
+
+                double num = double.Parse(secondNumber, System.Globalization.CultureInfo.InvariantCulture);
+                num = num * Math.PI / 180;
+                double result = 0;
+
+                if (msg == "sin")
+                {
+                    result = Math.Sin(num);
+                }
+
+                else if (msg == "cos")
+                {
+                    result = Math.Cos(num);
+                }
+
+                resultNumber = result.ToString();
+                changeTextDelegate.Invoke(resultNumber);
+            }   
+        }
+
+        void Modulo(string msg, bool isInput)
+        {
+            if (isInput)
+            {
+                calcState = CalcState.Modulo;
+                operation = "Mod";
+                firstNumber = secondNumber;
+                secondNumber = "";
+            }
+
+            else
+            {
+                if (Rules.IsNonZeroDigit(msg))
+                    AccumulateDigits(msg, true);
+            }
+        }
+
+        void Logarithm(string msg, bool isInput)
+        {
+            if (isInput)
+            {
+                calcState = CalcState.Logarithm;
+                double num = double.Parse(secondNumber, System.Globalization.CultureInfo.InvariantCulture);
+                double result = 0;
+                result = Math.Log10(num);
+                resultNumber = result.ToString();
+                changeTextDelegate.Invoke(resultNumber);
+            }
+        }
+
+        void ParticularPower(string msg, bool isInput)
+        {
+            if (isInput)
+            {
+                calcState = CalcState.ParticularPower;
+                operation = "pow";
+                firstNumber = secondNumber;
+                secondNumber = "";
+            }
+
+            else
+            {
+                if (Rules.IsNonZeroDigit(msg))
+                {
+                    AccumulateDigits(msg, true);
+                }
+            }
+        }
+
+        void PowerOfTen(string msg, bool isInput)
+        {
+            if (isInput)
+            {
+                calcState = CalcState.PowerOfTen;
+                double num = double.Parse(secondNumber, System.Globalization.CultureInfo.InvariantCulture);
+                double result = 0;
+                result = Math.Pow(10, num);
+                resultNumber = result.ToString();
+                changeTextDelegate.Invoke(resultNumber);
+            }
+        }
+
+        void Factorial(string msg, bool isInput)
+        {
+            if (isInput)
+            {
+                calcState = CalcState.Factorial;
+
+                int num = int.Parse(secondNumber);
+                long result = 1;
+                for (int i = 1; i <= num; i++)
+                {
+                    result *= i;
+                }
+                resultNumber = result.ToString();
+                changeTextDelegate.Invoke(resultNumber);
+            }
+        }
+
+        void AnyRoot(string msg, bool isInput)
+        {
+            if (isInput)
+            {
+                calcState = CalcState.AnyRoot;
+                operation = "root";
+                firstNumber = secondNumber;
+                secondNumber = "";
+            }
+
+            else
+            {
+                if (Rules.IsNonZeroDigit(msg))
+                {
+                    AccumulateDigits(msg, true);
+                }
+            }
         }
 
         string PerformCalculation()
