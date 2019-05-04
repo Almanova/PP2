@@ -26,9 +26,9 @@ namespace Calculator
         private void Form1_Load(object sender, EventArgs e)
         {
             Label label = new Label();
-            label.Size = new Size(140, 40);
+            label.Size = new Size(180, 40);
             label.Font = new Font("Adagio script", 23F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            label.Text = "Standard";
+            label.Text = "Engineering";
             Controls.Add(label);
 
             RecurringTextBox.Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Regular, GraphicsUnit.Point, 204);
@@ -307,7 +307,7 @@ namespace Calculator
 
             Button button8 = new Button();
             button8.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Point, 204);
-            button8.Text = " ";
+            button8.Text = "cop";
             button8.Size = new Size(79, 55);
             button8.BackColor = Color.FromArgb(219, 219, 219);
             button8.FlatStyle = FlatStyle.Flat;
@@ -318,6 +318,34 @@ namespace Calculator
             button8.Location = new Point(x + 79 * 4, y + 55 * 4);
             button8.Click += new EventHandler(BtnClick);
             Controls.Add(button8);
+
+            Button button9 = new Button();
+            button9.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            button9.Text = "(";
+            button9.Size = new Size(79, 55);
+            button9.BackColor = Color.FromArgb(219, 219, 219);
+            button9.FlatStyle = FlatStyle.Flat;
+            button9.FlatAppearance.BorderSize = 1;
+            button9.FlatAppearance.BorderColor = SystemColors.ActiveBorder;
+            button9.FlatAppearance.MouseOverBackColor = Color.FromArgb(91, 91, 91);
+            button9.FlatAppearance.MouseDownBackColor = Color.FromArgb(137, 88, 142);
+            button9.Location = new Point(x + 79 * 4, y + 55 * 5);
+            button9.Click += new EventHandler(BtnClick);
+            Controls.Add(button9);
+
+            Button button10 = new Button();
+            button10.Font = new Font("Microsoft Sans Serif", 16F, FontStyle.Regular, GraphicsUnit.Point, 204);
+            button10.Text = ")";
+            button10.Size = new Size(79, 55);
+            button10.BackColor = Color.FromArgb(219, 219, 219);
+            button10.FlatStyle = FlatStyle.Flat;
+            button10.FlatAppearance.BorderSize = 1;
+            button10.FlatAppearance.BorderColor = SystemColors.ActiveBorder;
+            button10.FlatAppearance.MouseOverBackColor = Color.FromArgb(91, 91, 91);
+            button10.FlatAppearance.MouseDownBackColor = Color.FromArgb(137, 88, 142);
+            button10.Location = new Point(x + 79 * 4, y + 55 * 6);
+            button10.Click += new EventHandler(BtnClick);
+            Controls.Add(button10);
         }
 
         private void ChangeText(string text)

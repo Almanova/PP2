@@ -19,7 +19,8 @@ namespace Calculator
         ParticularPower,
         PowerOfTen,
         Factorial,
-        AnyRoot
+        AnyRoot,
+        Expression
     }
 
     public delegate void ChangeTextDelegate(string text);
@@ -39,6 +40,12 @@ namespace Calculator
         List<string> reccuring = new List<string>();
         List<string> memoryBox = new List<string>();
         string memoryNumber = "0";
+        Stack<int> sumNumbers = new Stack<int>();
+        Stack<string> operations = new Stack<string>();
+        Stack<string> signs = new Stack<string>();
+        int precendence = 0;
+        bool isExpression = false;
+        bool isAdvancedExpression = false;
 
         public Brain(ChangeTextDelegate changeTextDelegate, ChangeTextDelegate changeRecurringTextDelegate)
         {
@@ -86,6 +93,9 @@ namespace Calculator
                 case CalcState.AnyRoot:
                     AnyRoot(msg, false);
                     break;
+                case CalcState.Expression:
+                    Expression(msg, false);
+                    break;
                 default:
                     break;
             }
@@ -97,7 +107,7 @@ namespace Calculator
             {
                 calcState = CalcState.Zero;
             }
-            
+
             else
             {
                 if (Rules.IsNonZeroDigit(msg))
@@ -218,6 +228,15 @@ namespace Calculator
 
                 else if (msg == "yrootx")
                     AnyRoot(msg, true);
+
+                else if (msg == ")")
+                {
+                    reccuring.Add(secondNumber);
+                    reccuring.Add(")");
+                    string text = string.Join(" ", reccuring.ToArray());
+                    changeRecurringTextDelegate.Invoke(text);
+                    Expression(msg, true);
+                }
             }
         }
 
@@ -229,12 +248,73 @@ namespace Calculator
 
                 if (operation.Length != 0 && afterResult == false)
                 {
-                    resultNumber = PerformCalculation();
-                    changeTextDelegate.Invoke(resultNumber);
-                    firstNumber = resultNumber;
-                    operation = msg;
-                    reccuring.Add(secondNumber);
-                    secondNumber = "";
+                    isExpression = true;
+                    if ((msg == "x" || msg == "÷") && (operations.Peek() == "+" || operations.Peek() == "-"))
+                    {
+                        operation = msg;
+                        operations.Push(operation);
+                        firstNumber = secondNumber;
+                        reccuring.Add(secondNumber);
+                        secondNumber = "";
+                        precendence = int.Parse(firstNumber);
+                    }
+
+                    else if ((msg == "x" || msg == "÷") && (operations.Peek() == "x" || operations.Peek() == "÷"))
+                    {
+                        if (operation == "x")
+                            precendence *= int.Parse(secondNumber);
+                        else if (operation == "÷")
+                            precendence /= int.Parse(secondNumber);
+                        changeTextDelegate.Invoke(precendence.ToString());
+                        operation = msg;
+                        operations.Push(operation);
+                        reccuring.Add(secondNumber);
+                        secondNumber = "";
+                    }
+
+                    else if ((msg == "+" || msg == "-") && (operations.Peek() == "x" || operations.Peek() == "÷"))
+                    {
+                        if (operation == "x")
+                            precendence *= int.Parse(secondNumber);
+                        else if (operation == "÷")
+                            precendence /= int.Parse(secondNumber);
+                        if (signs.Count > 0 && signs.Peek() == "-")
+                            precendence *= (-1);
+                        sumNumbers.Push(precendence);
+                        Stack<int> stack = new Stack<int>();
+                        int temp = 0;
+                        while (sumNumbers.Count > 0)
+                        {
+                            temp += sumNumbers.Peek();
+                            stack.Push(sumNumbers.Peek());
+                            sumNumbers.Pop();
+                        }
+                        while (stack.Count > 0)
+                        {
+                            sumNumbers.Push(stack.Peek());
+                            stack.Pop();
+                        }
+                        changeTextDelegate.Invoke(temp.ToString());
+                        precendence = 0;
+                        operation = msg;
+                        operations.Push(operation);
+                        signs.Push(operation);
+                        reccuring.Add(secondNumber);
+                        secondNumber = "";
+                    }
+
+                    else if ((msg == "+" || msg == "-") && (operations.Peek() == "-" || operations.Peek() == "-"))
+                    {
+                        if (operation == "-")
+                            sumNumbers.Push(int.Parse(secondNumber) * (-1));
+                        else if (operation == "+")
+                            sumNumbers.Push(int.Parse(secondNumber));
+                        operation = msg;
+                        operations.Push(operation);
+                        signs.Push(operation);
+                        reccuring.Add(secondNumber);
+                        secondNumber = "";
+                    }
                 }
 
                 else if (operation.Length != 0 && afterResult == true)
@@ -249,9 +329,19 @@ namespace Calculator
                 else
                 {
                     operation = msg;
+                    operations.Push(operation);
+                    if (operation == "+" || operation == "-")
+                    {
+                        sumNumbers.Push(int.Parse(secondNumber));
+                        signs.Push(operation);
+                    }
+                    else if (operation == "x" || operation == "÷")
+                        precendence = int.Parse(secondNumber);
+
+                    reccuring.Add(secondNumber);
                     if (firstNumber == "")
                         firstNumber = secondNumber;
-                    reccuring.Add(firstNumber);
+                    //reccuring.Add(firstNumber);
                     secondNumber = "";
                 }
 
@@ -278,6 +368,89 @@ namespace Calculator
 
                 else if (Rules.IsMemoryOperation(msg))
                     MemorySave(msg, true);
+
+                else if (msg == "(")
+                {
+                    reccuring.Add("(");
+                    string text = string.Join(" ", reccuring.ToArray());
+                    changeRecurringTextDelegate.Invoke(text);
+                    Expression(msg, true);
+                }
+            }
+        }
+
+        void Expression(string msg, bool isInput)
+        {
+            calcState = CalcState.Expression;
+            isAdvancedExpression = true;
+            isExpression = false;
+            Stack<Stack<int>> allSumNumbers = new Stack<Stack<int>>();
+            Stack<Stack<string>> allOperations = new Stack<Stack<string>>();
+            Stack<Stack<string>> allSigns = new Stack<Stack<string>>();
+            Stack<int> precendenceNumbers = new Stack<int>();
+
+            if (isInput)
+            {
+                if (msg == "(")
+                {
+                    operation = "";
+                    secondNumber = "";
+                    allSumNumbers.Push(sumNumbers);
+                    allOperations.Push(operations);
+                    allSigns.Push(signs);
+                    precendenceNumbers.Push(precendence);
+                    sumNumbers = new Stack<int>();
+                    operations = new Stack<string>();
+                    signs = new Stack<string>();
+                    precendence = 0;
+                }
+
+                else if (msg == ")")
+                {
+                    if (operations.Peek() == "+")
+                        sumNumbers.Push(int.Parse(secondNumber));
+                    else if (operations.Peek() == "-")
+                        sumNumbers.Push(int.Parse(secondNumber) * (-1));
+                    else if (operations.Peek() == "x")
+                    {
+                        if (signs.Peek() == "-")
+                            precendence *= (-1);
+                        precendence *= int.Parse(secondNumber);
+                        sumNumbers.Push(precendence);
+                    }
+                    else if (operations.Peek() == "÷")
+                    {
+                        if (signs.Peek() == "-")
+                            precendence *= (-1);
+                        precendence /= int.Parse(secondNumber);
+                        sumNumbers.Push(precendence);
+                    }
+
+                    int temp = 0;
+                    while (sumNumbers.Count > 0)
+                    {
+                        temp += sumNumbers.Peek();
+                        sumNumbers.Pop();
+                    }
+                    secondNumber = temp.ToString();
+                    changeTextDelegate.Invoke(secondNumber);
+                    allSumNumbers.Push(sumNumbers);
+                    allOperations.Push(operations);
+                    allSigns.Push(signs);
+                    precendenceNumbers.Push(precendence);
+                    sumNumbers = allSumNumbers.Peek();
+                    operations = allOperations.Peek();
+                    signs = allSigns.Peek();
+                    precendence = precendenceNumbers.Peek();
+                }
+            }
+
+            else
+            {
+                if (Rules.IsNonZeroDigit(msg))
+                    AccumulateDigits(msg, true);
+                else if (Rules.IsResult(msg))
+                    Result(msg, true);
             }
         }
 
@@ -302,11 +475,48 @@ namespace Calculator
                     resultNumber = Math.Pow(double.Parse(firstNumber), 1.0 / double.Parse(secondNumber)).ToString();
                 }
 
+                else if (isExpression == true || isAdvancedExpression == true)
+                {
+                    if (operations.Peek() == "+")
+                        sumNumbers.Push(int.Parse(secondNumber));
+                    else if (operations.Peek() == "-")
+                        sumNumbers.Push(int.Parse(secondNumber) * (-1));
+                    else if (operations.Peek() == "x")
+                    {
+                        if (signs.Peek() == "-")
+                            precendence *= (-1);
+                        precendence *= int.Parse(secondNumber);
+                        sumNumbers.Push(precendence);
+                    }
+                    else if (operations.Peek() == "÷")
+                    {
+                        if (signs.Peek() == "-")
+                            precendence *= (-1);
+                        precendence /= int.Parse(secondNumber);
+                        sumNumbers.Push(precendence);
+                    }
+
+                    int temp = 0;
+                    while (sumNumbers.Count > 0)
+                    {
+                        temp += sumNumbers.Peek();
+                        sumNumbers.Pop();
+                    }
+                    resultNumber = temp.ToString();
+                }
+
+                /*else if (isAdvancedExpression == true)
+                {
+
+                }*/
+
                 else
                     resultNumber = PerformCalculation();
 
                 changeTextDelegate.Invoke(resultNumber);
                 firstNumber = resultNumber;
+                isExpression = false;
+                isAdvancedExpression = false;
 
                 reccuring = new List<string>();
                 changeRecurringTextDelegate.Invoke("");
@@ -355,7 +565,7 @@ namespace Calculator
 
                 if (resultToMemory)
                     num = double.Parse(resultNumber.Replace(",", "."), System.Globalization.CultureInfo.InvariantCulture);
-                else 
+                else
                     num = double.Parse(secondNumber.Replace(",", "."), System.Globalization.CultureInfo.InvariantCulture);
 
                 if (msg == "M+")
@@ -445,7 +655,7 @@ namespace Calculator
 
                 resultNumber = result.ToString();
                 changeTextDelegate.Invoke(resultNumber);
-            }   
+            }
         }
 
         void Modulo(string msg, bool isInput)
